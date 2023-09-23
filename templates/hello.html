@@ -1,0 +1,18 @@
+<!-- templates/results.html -->
+<!DOCTYPE html>
+<html>
+  <title>NLP API</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}" />
+  <body>
+    <h1>Information Retrieval using NLP Methods</h1>
+    <p>
+      This API allows you to send a POST query to
+      <a href="http://http://127.0.0.1:5000/api/similarity"
+        >http://127.0.0.1:5000/api/similarity</a
+      >.
+    </p>
+    <p>Please structure the API request as a JSON object like so:</p>
+    <code> { "query": "This is my query" } </code>
+    <p>And send it via applications like Postman.</p>
+  </body>
+</html>
