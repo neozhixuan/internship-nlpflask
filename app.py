@@ -25,7 +25,6 @@ def hello():
 def similarity_endpoint():
     data = request.get_json()
     query = data.get("query")
-    query = query.decode('utf-8')  # Decode input data
 
     if not query:
         return jsonify({"error": "Query parameter is missing"}), 400
@@ -35,7 +34,6 @@ def similarity_endpoint():
 
     # Return the JSON object directly
     response = jsonify({"results": similarities})
-    response.headers["Content-Type"] = "application/json; charset=utf-8"
     return response
 
 
