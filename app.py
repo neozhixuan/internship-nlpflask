@@ -25,7 +25,7 @@ def hello():
 
 
 @app.route('/api/similarity', methods=['POST'])
-@cross_origin()
+@cross_origin(origin='*')
 def similarity_endpoint():
     data = request.get_json()
     query = data.get("query")
