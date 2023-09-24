@@ -56,7 +56,7 @@ def similarity_endpoint():
         response.headers.add('Access-Control-Allow-Credentials', 'true')
     else:
         # If the origin is not allowed, don't set the Access-Control-Allow-Origin header
-        response = jsonify({'message': 'Origin not allowed'})
+        response = jsonify({"results": similarities})
 
     return response
 
