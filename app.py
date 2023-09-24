@@ -38,6 +38,7 @@ def similarity_endpoint():
 
     # Return the JSON object directly
     response = jsonify({"results": similarities})
+    response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
 
