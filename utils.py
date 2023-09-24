@@ -1,8 +1,12 @@
-import os
+
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
 from string import punctuation
+import os
+import nltk
+nltk.download('punkt')
+nltk.download('stopwords')
 
 
 def load_files(directory):
