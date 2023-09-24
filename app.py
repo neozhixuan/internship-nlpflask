@@ -11,7 +11,7 @@ import math
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS, cross_origin
 app = Flask(__name__)
-cors = CORS(app)
+cors = CORS(app, supports_credentials=True)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 FILE_MATCHES = 3
@@ -39,6 +39,7 @@ def similarity_endpoint():
     # Return the JSON object directly
     response = jsonify({"results": similarities})
     response.headers.add('Access-Control-Allow-Origin', '*')
+
     return response
 
 
