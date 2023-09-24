@@ -11,7 +11,8 @@ import math
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS, cross_origin
 app = Flask(__name__)
-cors = CORS(app, resources={r"/*": {"origins": ["http://localhost:3000", "https://internship-nlpfrontend.vercel.app/"]}}, supports_credentials=True)
+cors = CORS(app, resources={r"/*": {"origins": ["http://localhost:3000",
+            "https://internship-nlpfrontend.vercel.app/"]}}, supports_credentials=True)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 FILE_MATCHES = 3
@@ -36,9 +37,25 @@ def similarity_endpoint():
     # Calculate similarity
     similarities = calculate_similarity(query, "corpus")
 
-    # Return the JSON object directly
-    response = jsonify({"results": similarities})
-    response.headers.add('Access-Control-Allow-Origin', '*')
+    # Determine the origin of the incoming request
+    origin = request.headers.get("Origin")
+
+    # Define the allowed origins
+    allowed_origins = ["http://localhost:3000",
+                       "https://internship-nlpfrontend.vercel.app/"]
+
+    # Check if the origin is in the allowed origins
+    if origin in allowed_origins:
+        # Return the JSON object directly
+        response = jsonify({"results": similarities})
+        response.headers.add('Access-Control-Allow-Origin', origin)
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+        response.headers.add('Access-Control-Allow-Methods', 'GET, POST')
+        # Set to 'true' when using credentials
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+    else:
+        # If the origin is not allowed, don't set the Access-Control-Allow-Origin header
+        response = jsonify({'message': 'Origin not allowed'})
 
     return response
 
