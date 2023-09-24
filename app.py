@@ -9,19 +9,23 @@ import joblib
 import nltk
 import math
 from flask import Flask, request, jsonify, render_template
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 app = Flask(__name__)
-CORS(app)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
+
 FILE_MATCHES = 3
 SENTENCE_MATCHES = 3
 
 
 @app.route('/')
+@cross_origin()
 def hello():
     return render_template('hello.html')
 
 
 @app.route('/api/similarity', methods=['POST'])
+@cross_origin()
 def similarity_endpoint():
     data = request.get_json()
     query = data.get("query")
