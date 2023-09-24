@@ -9,9 +9,9 @@ import joblib
 import nltk
 import math
 from flask import Flask, request, jsonify, render_template
-
+from flask_cors import CORS
 app = Flask(__name__)
-
+CORS(app)
 FILE_MATCHES = 3
 SENTENCE_MATCHES = 3
 
