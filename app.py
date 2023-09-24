@@ -11,7 +11,7 @@ import math
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS, cross_origin
 app = Flask(__name__)
-cors = CORS(app, supports_credentials=True)
+cors = CORS(app, resources={r"/*": {"origins": ["http://localhost:3000", "https://internship-nlpfrontend.vercel.app/"]}}, supports_credentials=True)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 FILE_MATCHES = 3
@@ -25,7 +25,7 @@ def hello():
 
 
 @app.route('/api/similarity', methods=['POST'])
-@cross_origin(origin='*')
+@cross_origin(["http://localhost:3000", "https://internship-nlpfrontend.vercel.app/"])
 def similarity_endpoint():
     data = request.get_json()
     query = data.get("query")
