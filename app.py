@@ -15,8 +15,8 @@ cors = CORS(app, resources={r"/*": {"origins": ["http://localhost:3000",
             "https://internship-nlpfrontend.vercel.app"]}}, supports_credentials=True)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
-FILE_MATCHES = 3
-SENTENCE_MATCHES = 3
+FILE_MATCHES = 5
+SENTENCE_MATCHES = 5
 
 
 @app.route('/')
@@ -202,30 +202,41 @@ def calculate_similarity(query, corpus):
             print(f"== Document: {doc}, Predicted Relevance: {relevance:.2f}")
             count += 1
             break
-    return similarities
 
-    # # Extract sentences from top files
-    # sentences = dict()
-    # # for doc, _ in sorted_documents_and_weighted_relevance:
-    # for passage in files[sorted_documents_and_weighted_relevance[0][0]].split("\n"):
-    #     for sentence in nltk.sent_tokenize(passage):
-    #         tokens = tokenize_and_process(sentence)
-    #         if tokens:
-    #             sentences[sentence] = tokens
+    # return similarities
+    # Extract sentences from top files
+    sentences = dict()
+    # for doc, _ in sorted_documents_and_weighted_relevance:
+    for passage in files[sorted_documents_and_weighted_relevance[0][0]].split("\n"):
+        for sentence in nltk.sent_tokenize(passage):
+            tokens = tokenize_and_process(sentence)
+            if tokens:
+                sentences[sentence] = tokens
 
-    # # Compute IDF values across sentences
-    # idfs = compute_idfs(sentences)
+    # Compute IDF values across sentences
+    idfs = compute_idfs(sentences)
 
-    # # Determine top sentence matches
-    # top_matches = top_sentences(querySet, sentences, idfs, n=1)
-    # print("The most relevant sentence in the top document is:")
-    # for i in range(len(top_matches)):
-    #     print(f"== {top_matches[i]}")
+    sentenceResults = []
+    # Determine top sentence matches
+    top_matches = top_sentences(querySet, sentences, idfs, n=1)
+    print("The most relevant sentence in the top document is:")
+    for i in range(len(top_matches)):
+        print(f"== {top_matches[i]}")
+        sentenceResults.append(
+            {"sentence": top_matches[i]})
+    print("end")
 
-    # matches = top_sentences(querySet, sentences, idfs, n=SENTENCE_MATCHES)
-    # print("The most relevant sentence(s) in the top documents are:")
-    # for i in range(len(matches)):
-    #     print(f"== {i+1}: {matches[i]}")
+    matches = top_sentences(querySet, sentences, idfs, SENTENCE_MATCHES)
+    print("The most relevant sentence(s) in the top documents are:")
+    for j in range(len(matches)):
+        print(f"== {j+1}: {matches[j]}")
+        sentenceResults.append(
+            {"sentence": matches[j]})
+
+    overallResults = {}
+    overallResults["similarities"] = similarities
+    overallResults["sentences"] = sentenceResults
+    return overallResults
 
 
 def top_sentences(query, sentences, idfs, n):
