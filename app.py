@@ -43,11 +43,11 @@ def similarity_endpoint():
     # Define the allowed origins
     allowed_origins = ["http://localhost:3000",
                        "https://internship-nlpfrontend.vercel.app/"]
+    response = jsonify({"results": similarities})
 
     # Check if the origin is in the allowed origins
     if origin in allowed_origins:
         # Return the JSON object directly
-        response = jsonify({"results": similarities})
         response.headers.add('Access-Control-Allow-Origin', origin)
         response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
         response.headers.add('Access-Control-Allow-Methods', 'GET, POST')
@@ -56,14 +56,12 @@ def similarity_endpoint():
         response.headers.add('Access-Control-Allow-Credentials', 'true')
     else:
         response.headers.add('Access-Control-Allow-Origin', '*')
-
         response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
         response.headers.add('Access-Control-Allow-Methods', 'GET, POST')
         # Set to 'true' when using credentials
         response.headers['Access-Control-Allow-Credentials'] = 'true'
         response.headers.add('Access-Control-Allow-Credentials', 'true')
         # If the origin is not allowed, don't set the Access-Control-Allow-Origin header
-        response = jsonify({"results": similarities})
 
     return response
 
