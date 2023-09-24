@@ -52,6 +52,7 @@ def similarity_endpoint():
         response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
         response.headers.add('Access-Control-Allow-Methods', 'GET, POST')
         # Set to 'true' when using credentials
+        response.headers['Access-Control-Allow-Credentials'] = 'true'
         response.headers.add('Access-Control-Allow-Credentials', 'true')
     else:
         # If the origin is not allowed, don't set the Access-Control-Allow-Origin header
