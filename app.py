@@ -12,7 +12,7 @@ from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS, cross_origin
 app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": ["http://localhost:3000",
-            "https://internship-nlpfrontend.vercel.app/"]}}, supports_credentials=True)
+            "https://internship-nlpfrontend.vercel.app"]}}, supports_credentials=True)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 FILE_MATCHES = 3
@@ -26,7 +26,7 @@ def hello():
 
 
 @app.route('/api/similarity', methods=['POST'])
-@cross_origin(["http://localhost:3000", "https://internship-nlpfrontend.vercel.app/"])
+@cross_origin(["http://localhost:3000", "https://internship-nlpfrontend.vercel.app"])
 def similarity_endpoint():
     data = request.get_json()
     query = data.get("query")
@@ -55,7 +55,6 @@ def similarity_endpoint():
         response.headers['Access-Control-Allow-Credentials'] = 'true'
         response.headers.add('Access-Control-Allow-Credentials', 'true')
     else:
-        response.headers.add('Access-Control-Allow-Origin', '*')
         response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
         response.headers.add('Access-Control-Allow-Methods', 'GET, POST')
         # Set to 'true' when using credentials
