@@ -272,7 +272,11 @@ def top_sentences(query, sentences, idfs, n):
                     uniqueWords.append(quer)
     sorted_dict = dict(
         sorted(mwm.items(), key=lambda item: item[1], reverse=True))
-    first_key_value = next(iter(sorted_dict.values()))
+    # Handle the case where sorted_dict is empty (no sentences to process)
+    if sorted_dict:
+        first_key_value = next(iter(sorted_dict.values()))
+    else:
+        return []
 
     # For each top scoring sentence
     for sentence, idfsvalue in sorted_dict.items():
