@@ -14,11 +14,25 @@ def main():
         sys.exit("Enter your input like this: python preprocessing.py corpus")
 
     files = load_files(sys.argv[1])
+
     file_words = {
         filename: tokenize_and_process(files[filename])
         for filename in files
     }
+    # corpus_directory = sys.argv[1]
+    # files = load_files(corpus_directory)
 
+    # for filename in files:
+    #     file = files[filename]
+    #     if (is_pdf(file)):
+    #         file_path = os.path.join(corpus_directory, filename)
+    #         pdf_text = load_pdf_text(file_path)
+    #         processed_words = tokenize_and_process(pdf_text)
+    #         file = processed_words
+
+    #     file_words = {
+    #         filename: tokenize_and_process(file)
+    #     }
     # Initialise libraries
     vectorizer = TfidfVectorizer()
     # Fit the SVD model

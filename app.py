@@ -18,7 +18,6 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 FILE_MATCHES = 5
 SENTENCE_MATCHES = 5
 
-
 @app.route('/')
 @cross_origin()
 def hello():
