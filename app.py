@@ -1,15 +1,23 @@
+import openai
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 import pickle
-from utils import load_files, tokenize_and_process
+from utils import load_files, tokenize_and_process, load_document
 from trainingdata import relevance_labels, documents, cosine_similarity_scores
 import joblib
 import nltk
 import math
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS, cross_origin
+from dotenv import load_dotenv
+import os
+# Load environment variables from .env file
+load_dotenv()
+openai.api_key = os.getenv('OPENAIKEY')
+
+
 app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": ["http://localhost:3000",
             "https://internship-nlpfrontend.vercel.app"]}}, supports_credentials=True)
@@ -37,37 +45,28 @@ def similarity_endpoint():
     # Calculate similarity
     similarities = calculate_similarity(query, "corpus")
 
-    # Determine the origin of the incoming request
-    origin = request.headers.get("Origin")
+    pdf_text = load_document(
+        "corpus", similarities["similarities"][0]["document"]).replace('\n', ' ')
+    prompt = f"Please provide an answer (step-by-step instructions if it is a How question) on {query} using the information from the provided PDF documents after this semicolon: \n\n{pdf_text}.\n\nUser:"
+    print(prompt)
 
-    # Define the allowed origins
-    allowed_origins = ["http://localhost:3000",
-                       "https://internship-nlpfrontend.vercel.app/"]
-    response = jsonify({"results": similarities})
+    # Generate response using OpenAI Davinci engine
+    response = openai.Completion.create(
+        engine="text-davinci-003",
+        prompt=prompt,
+        max_tokens=100,
+        temperature=0.5,
+        n=1,
+        stop=None
+    )
+    if response.choices[0].text:
+        answer = response.choices[0].text.strip() + "..."
+    else:
+        answer = ""
 
-    # Check if the origin is in the allowed origins
-    # if origin in allowed_origins:
-    #     # Return the JSON object directly
-    #     response.headers.add('Access-Control-Allow-Origin', origin)
-    #     response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
-    #     response.headers.add('Access-Control-Allow-Methods', 'GET, POST')
-    #     # Set to 'true' when using credentials
-    #     response.headers['Access-Control-Allow-Credentials'] = 'true'
-    #     response.headers.add('Access-Control-Allow-Credentials', 'true')
-    # else:
-    #     response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
-    #     response.headers.add('Access-Control-Allow-Methods', 'GET, POST')
-    #     # Set to 'true' when using credentials
-    #     response.headers['Access-Control-Allow-Credentials'] = 'true'
-    #     response.headers.add('Access-Control-Allow-Credentials', 'true')
-    # If the origin is not allowed, don't set the Access-Control-Allow-Origin header
-    # response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
-    # response.headers.add('Access-Control-Allow-Methods', 'GET, POST')
-    # response.headers.add('Access-Control-Allow-Credentials', 'true')
-    # response.headers.add('Access-Control-Allow-Origin',
-    #                      "http://localhost:3000")
+    similarities["answer"] = answer
 
-    return response
+    return jsonify({"results": similarities})
 
 
 def calculate_similarity(query, corpus):

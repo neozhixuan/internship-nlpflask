@@ -68,3 +68,16 @@ def load_pdf_text(pdf_path):
 def is_pdf(file_path):
     _, extension = os.path.splitext(file_path)
     return extension.lower() == ".pdf"
+
+
+def load_document(directory, filename):
+    newname = os.path.join(directory, filename)
+
+    # Extract text from pdf
+    pdf_text = ""
+    if (is_pdf(newname)):
+        pdf_text = load_pdf_text(newname)
+    else:
+        with open(newname, encoding='utf8') as file:
+            pdf_text = file.read()
+    return pdf_text
