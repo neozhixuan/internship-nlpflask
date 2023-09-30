@@ -18,6 +18,7 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 FILE_MATCHES = 5
 SENTENCE_MATCHES = 5
 
+
 @app.route('/')
 @cross_origin()
 def hello():
@@ -45,21 +46,26 @@ def similarity_endpoint():
     response = jsonify({"results": similarities})
 
     # Check if the origin is in the allowed origins
-    if origin in allowed_origins:
-        # Return the JSON object directly
-        response.headers.add('Access-Control-Allow-Origin', origin)
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
-        response.headers.add('Access-Control-Allow-Methods', 'GET, POST')
-        # Set to 'true' when using credentials
-        response.headers['Access-Control-Allow-Credentials'] = 'true'
-        response.headers.add('Access-Control-Allow-Credentials', 'true')
-    else:
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
-        response.headers.add('Access-Control-Allow-Methods', 'GET, POST')
-        # Set to 'true' when using credentials
-        response.headers['Access-Control-Allow-Credentials'] = 'true'
-        response.headers.add('Access-Control-Allow-Credentials', 'true')
-        # If the origin is not allowed, don't set the Access-Control-Allow-Origin header
+    # if origin in allowed_origins:
+    #     # Return the JSON object directly
+    #     response.headers.add('Access-Control-Allow-Origin', origin)
+    #     response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+    #     response.headers.add('Access-Control-Allow-Methods', 'GET, POST')
+    #     # Set to 'true' when using credentials
+    #     response.headers['Access-Control-Allow-Credentials'] = 'true'
+    #     response.headers.add('Access-Control-Allow-Credentials', 'true')
+    # else:
+    #     response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+    #     response.headers.add('Access-Control-Allow-Methods', 'GET, POST')
+    #     # Set to 'true' when using credentials
+    #     response.headers['Access-Control-Allow-Credentials'] = 'true'
+    #     response.headers.add('Access-Control-Allow-Credentials', 'true')
+    # If the origin is not allowed, don't set the Access-Control-Allow-Origin header
+    # response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+    # response.headers.add('Access-Control-Allow-Methods', 'GET, POST')
+    # response.headers.add('Access-Control-Allow-Credentials', 'true')
+    # response.headers.add('Access-Control-Allow-Origin',
+    #                      "http://localhost:3000")
 
     return response
 
