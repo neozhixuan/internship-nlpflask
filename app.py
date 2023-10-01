@@ -13,6 +13,7 @@ from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS, cross_origin
 from dotenv import load_dotenv
 import os
+import re
 # Load environment variables from .env file
 load_dotenv()
 openai.api_key = os.getenv('OPENAIKEY')
@@ -45,10 +46,22 @@ def similarity_endpoint():
     # Calculate similarity
     similarities = calculate_similarity(query, "corpus")
 
+    return jsonify({"results": similarities})
+
+
+@app.route('/api/gpt_call', methods=['POST'])
+@cross_origin(["http://localhost:3000", "https://internship-nlpfrontend.vercel.app"])
+def gpt_call():
+    data = request.get_json()
+    query = data.get("query")
+    top_doc = data.get("top_doc")
+
+    if not query:
+        return jsonify({"error": "Query parameter is missing"}), 400
+
     pdf_text = load_document(
-        "corpus", similarities["similarities"][0]["document"]).replace('\n', ' ')
-    prompt = f"Please provide an answer (step-by-step instructions if it is a How question) on {query} using the information from the provided PDF documents after this semicolon: \n\n{pdf_text}.\n\nUser:"
-    print(prompt)
+        "corpus", top_doc).replace('\n', ' ')
+    prompt = f"Please provide an answer (step-by-step instructions if it is a How do/may/can I question) on {query} using the information from the provided PDF documents after this semicolon: \n\n{pdf_text}.\n\n"
 
     # Generate response using OpenAI Davinci engine
     response = openai.Completion.create(
@@ -59,14 +72,13 @@ def similarity_endpoint():
         n=1,
         stop=None
     )
+
     if response.choices[0].text:
         answer = response.choices[0].text.strip() + "..."
     else:
         answer = ""
 
-    similarities["answer"] = answer
-
-    return jsonify({"results": similarities})
+    return jsonify({"answer": answer})
 
 
 def calculate_similarity(query, corpus):
@@ -212,10 +224,14 @@ def calculate_similarity(query, corpus):
     sentences = dict()
     # for doc, _ in sorted_documents_and_weighted_relevance:
     for passage in files[sorted_documents_and_weighted_relevance[0][0]].split("\n"):
+        strings_to_ignore = ["Last Updated:", "Report vulnerability", "Privacy", "Terms of use", "Legislation", "Sitemap", "Contact us", "Note", "eServices", "Calculators", "Newsroom", "https://www.mom.gov.sg",
+                             "9/29/23", "Work passes", "Employment practices", "Workplace safety and health", "Statistics and publications", "A Singapore Government Agency Website How to identify", "About us", "© 2023"]
         for sentence in nltk.sent_tokenize(passage):
-            tokens = tokenize_and_process(sentence)
-            if tokens:
-                sentences[sentence] = tokens
+            # Filter out unneeded words
+            if not any(substring in sentence for substring in strings_to_ignore):
+                tokens = tokenize_and_process(sentence)
+                if tokens:
+                    sentences[sentence] = tokens
 
     # Compute IDF values across sentences
     idfs = compute_idfs(sentences)
