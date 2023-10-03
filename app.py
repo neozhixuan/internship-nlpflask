@@ -123,6 +123,7 @@ def calculate_similarity(query, corpus):
     cosine_similarity_tfidf = cosine_similarity(query_vector, tfidf_matrix)
     ################################################
     # Combine the cosine similarities using weights
+
     combined_cosine_similarity = (
         (0.5*cosine_similarity_lsi) + (0.5*cosine_similarity_tfidf))
     # [[0.02046143 0.08802105 0.39080196 0.60761269 0.12867288 0.18118849]]
@@ -140,6 +141,8 @@ def calculate_similarity(query, corpus):
 
     rank_and_relevance = enumerate(
         zip(top_files_combined, relevance_scores_combined), start=1)
+
+    print(rank_and_relevance)
 
     ########################
     # Self Training Algorithm
@@ -186,25 +189,25 @@ def calculate_similarity(query, corpus):
     # Machine Learning Algorithm Training
     # Training Set of 2 Queries
 
-    # Load the saved model from the file
-    model_filename = 'pointwise_ranking_model.joblib'
-    model = joblib.load(model_filename)
+    # # Load the saved model from the file
+    # model_filename = 'pointwise_ranking_model.joblib'
+    # model = joblib.load(model_filename)
 
-    # Combine new cosine similarity scores into a feature matrix
-    X_new = np.array(combined_cosine_similarity).reshape(-1, 1)
+    # # Combine new cosine similarity scores into a feature matrix
+    # X_new = np.array(combined_cosine_similarity).reshape(-1, 1)
 
-    # Predict relevance labels for new query-document pairs
-    predicted_relevance_labels = model.predict(X_new)
-    # [1.59421771 2.03440386 4.00717956 5.41981466 2.29927175 2.6414384 ]
+    # # Predict relevance labels for new query-document pairs
+    # predicted_relevance_labels = model.predict(X_new)
+    # # [1.59421771 2.03440386 4.00717956 5.41981466 2.29927175 2.6414384 ]
 
-    # Sort the documents and predicted relevance labels together based on the relevance scores in descending order
-    sorted_documents_and_relevance = sorted(
-        zip(list_of_file_names, predicted_relevance_labels), key=lambda x: x[1], reverse=True)
+    # # Sort the documents and predicted relevance labels together based on the relevance scores in descending order
+    # sorted_documents_and_relevance = sorted(
+    #     zip(list_of_file_names, predicted_relevance_labels), key=lambda x: x[1], reverse=True)
 
-    # Weighted scores:
-    for i in range(len(combined_cosine_similarity[0])):
-        combined_cosine_similarity[0][i] += (0.1 *
-                                             predicted_relevance_labels[i])
+    # # Weighted scores:
+    # for i in range(len(combined_cosine_similarity[0])):
+    #     combined_cosine_similarity[0][i] += (0.1 *
+    #                                          predicted_relevance_labels[i])
     sorted_documents_and_weighted_relevance = sorted(
         zip(list_of_file_names, combined_cosine_similarity[0]), key=lambda x: x[1], reverse=True)
     similarities = []
@@ -212,12 +215,11 @@ def calculate_similarity(query, corpus):
     print(f"Most relevant documents for the query: {query}")
     count = 0
     for doc, relevance in sorted_documents_and_weighted_relevance:
-        while count < 3:
-            similarities.append(
-                {"document": doc, "similarity_score": relevance})
-            print(f"== Document: {doc}, Predicted Relevance: {relevance:.2f}")
-            count += 1
+        if relevance < 0.30:
             break
+        similarities.append(
+            {"document": doc, "similarity_score": relevance})
+        print(f"== Document: {doc}, Predicted Relevance: {relevance:.2f}")
 
     # return similarities
     # Extract sentences from top files
