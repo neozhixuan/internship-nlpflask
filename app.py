@@ -13,15 +13,14 @@ from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS, cross_origin
 from dotenv import load_dotenv
 import os
-import re
+
 # Load environment variables from .env file
 load_dotenv()
 openai.api_key = os.getenv('OPENAIKEY')
 
-
 app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": ["http://localhost:3000",
-            "https://internship-nlpfrontend.vercel.app"]}}, supports_credentials=True)
+            "https://internship-nlpfrontend.vercel.app", "https://nlp-api.fly.dev"]}}, supports_credentials=True)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 FILE_MATCHES = 5
@@ -35,7 +34,7 @@ def hello():
 
 
 @app.route('/api/similarity', methods=['POST'])
-@cross_origin(["http://localhost:3000", "https://internship-nlpfrontend.vercel.app"])
+@cross_origin(["http://localhost:3000", "https://internship-nlpfrontend.vercel.app", "https://nlp-api.fly.dev"])
 def similarity_endpoint():
     data = request.get_json()
     query = data.get("query")
@@ -50,7 +49,7 @@ def similarity_endpoint():
 
 
 @app.route('/api/gpt_call', methods=['POST'])
-@cross_origin(["http://localhost:3000", "https://internship-nlpfrontend.vercel.app"])
+@cross_origin(["http://localhost:3000", "https://internship-nlpfrontend.vercel.app", "https://nlp-api.fly.dev"])
 def gpt_call():
     data = request.get_json()
     query = data.get("query")
