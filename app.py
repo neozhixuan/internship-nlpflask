@@ -90,8 +90,8 @@ def calculate_similarity(query, corpus):
         for filename in files
     }
 
-    list_of_file_names = list(file_words.keys())
-
+    list_of_file_names = sorted(list(file_words.keys()))
+    print(list_of_file_names)
     # Load the TF-IDF vectorizer and matrix
     with open("preprocess/tfidf_vectorizer.pkl", "rb") as f:
         vectorizer = pickle.load(f)
@@ -125,6 +125,7 @@ def calculate_similarity(query, corpus):
 
     combined_cosine_similarity = (
         (0.5*cosine_similarity_lsi) + (0.5*cosine_similarity_tfidf))
+    # print(combined_cosine_similarity)
     # [[0.02046143 0.08802105 0.39080196 0.60761269 0.12867288 0.18118849]]
 
     # Sort the indices of the top files, to use it to get file names
@@ -133,15 +134,15 @@ def calculate_similarity(query, corpus):
         0][-FILE_MATCHES:][::-1]
     # Eg. Get files 3, 2, 5
 
-    top_files_combined = [list(file_words.keys())[index]
-                          for index in top_file_indices_combined]
-    relevance_scores_combined = [
-        combined_cosine_similarity[0][i] for i in top_file_indices_combined]
+    # top_files_combined = [list_of_file_names[index]
+    #                       for index in top_file_indices_combined]
+    # relevance_scores_combined = [
+    #     combined_cosine_similarity[0][i] for i in top_file_indices_combined]
 
-    rank_and_relevance = enumerate(
-        zip(top_files_combined, relevance_scores_combined), start=1)
+    # rank_and_relevance = enumerate(
+    #     zip(top_files_combined, relevance_scores_combined), start=1)
 
-    print(rank_and_relevance)
+    # print(rank_and_relevance)
 
     ########################
     # Self Training Algorithm
@@ -212,7 +213,7 @@ def calculate_similarity(query, corpus):
     similarities = []
     print("====================================================")
     print(f"Most relevant documents for the query: {query}")
-    count = 0
+
     for doc, relevance in sorted_documents_and_weighted_relevance:
         if relevance < 0.30:
             break
@@ -220,7 +221,6 @@ def calculate_similarity(query, corpus):
             {"document": doc, "similarity_score": relevance})
         print(f"== Document: {doc}, Predicted Relevance: {relevance:.2f}")
 
-    # return similarities
     # Extract sentences from top files
     sentences = dict()
     # for doc, _ in sorted_documents_and_weighted_relevance:
@@ -257,6 +257,10 @@ def calculate_similarity(query, corpus):
     overallResults = {}
     overallResults["similarities"] = similarities
     overallResults["sentences"] = sentenceResults
+    overallResults["debug"] = list_of_file_names
+    overallResults["debug2"] = [str(index)
+                                for index in top_file_indices_combined]
+
     return overallResults
 
 
