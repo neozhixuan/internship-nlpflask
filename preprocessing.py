@@ -46,7 +46,7 @@ def main():
         pickle.dump(latent_semantic_matrix, f)
     end_time = time.time()
     print(
-        f"Successfully preprocessed all vectors and matrices with a time of {(end_time - start_time).to} seconds")
+        f"Successfully preprocessed all vectors and matrices with a time of {round((end_time - start_time),2)} seconds")
 
 
 if __name__ == "__main__":
