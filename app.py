@@ -13,6 +13,7 @@ from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS, cross_origin
 from dotenv import load_dotenv
 import os
+from transformers import pipeline
 
 # Load environment variables from .env file
 load_dotenv()
@@ -213,10 +214,18 @@ def calculate_similarity(query, corpus):
     similarities = []
     print("====================================================")
     print(f"Most relevant documents for the query: {query}")
-
+    first = True
+    answer = {"answer": ""}
     for doc, relevance in sorted_documents_and_weighted_relevance:
         if relevance < 0.30:
             break
+        if first:
+            pdf_text = load_document(
+                "corpus", doc).replace('\n', ' ')
+            question_answerer = pipeline("question-answering", model="bert-large-uncased-whole-word-masking-finetuned-squad",
+                                         tokenizer="bert-large-uncased-whole-word-masking-finetuned-squad")
+            answer = question_answerer(question=query, context=pdf_text)
+            first = False
         similarities.append(
             {"document": doc, "similarity_score": relevance})
         print(f"== Document: {doc}, Predicted Relevance: {relevance:.2f}")
@@ -257,9 +266,7 @@ def calculate_similarity(query, corpus):
     overallResults = {}
     overallResults["similarities"] = similarities
     overallResults["sentences"] = sentenceResults
-    overallResults["debug"] = list_of_file_names
-    overallResults["debug2"] = [str(index)
-                                for index in top_file_indices_combined]
+    overallResults["bertanswer"] = answer["answer"]
 
     return overallResults
 
