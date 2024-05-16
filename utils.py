@@ -6,8 +6,12 @@ from nltk.stem.porter import PorterStemmer
 from string import punctuation
 import os
 import nltk
-nltk.download('punkt')
-nltk.download('stopwords')
+# Download NLTK data if needed
+import nltk
+if not nltk.data.find('tokenizers/punkt'):
+    nltk.download('punkt')
+if not nltk.data.find('corpora/stopwords'):
+    nltk.download('stopwords')
 
 
 def load_files(directory):

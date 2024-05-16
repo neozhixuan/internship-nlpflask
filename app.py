@@ -13,7 +13,6 @@ from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS, cross_origin
 from dotenv import load_dotenv
 import os
-from transformers import pipeline
 
 # Load environment variables from .env file
 load_dotenv()
@@ -65,7 +64,7 @@ def gpt_call():
 
     # Generate response using OpenAI Davinci engine
     response = openai.Completion.create(
-        engine="text-davinci-003",
+        engine="gpt-3.5-turbo-instruct",
         prompt=prompt,
         max_tokens=100,
         temperature=0.5,
@@ -214,18 +213,9 @@ def calculate_similarity(query, corpus):
     similarities = []
     print("====================================================")
     print(f"Most relevant documents for the query: {query}")
-    first = True
-    answer = {"answer": ""}
     for doc, relevance in sorted_documents_and_weighted_relevance:
         if relevance < 0.30:
             break
-        if first:
-            pdf_text = load_document(
-                "corpus", doc).replace('\n', ' ')
-            question_answerer = pipeline("question-answering", model="bert-large-uncased-whole-word-masking-finetuned-squad",
-                                         tokenizer="bert-large-uncased-whole-word-masking-finetuned-squad")
-            answer = question_answerer(question=query, context=pdf_text)
-            first = False
         similarities.append(
             {"document": doc, "similarity_score": relevance})
         print(f"== Document: {doc}, Predicted Relevance: {relevance:.2f}")
@@ -266,7 +256,6 @@ def calculate_similarity(query, corpus):
     overallResults = {}
     overallResults["similarities"] = similarities
     overallResults["sentences"] = sentenceResults
-    overallResults["bertanswer"] = answer["answer"]
 
     return overallResults
 
