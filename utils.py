@@ -8,10 +8,10 @@ import os
 import nltk
 # Download NLTK data if needed
 import nltk
-if not nltk.data.find('tokenizers/punkt'):
-    nltk.download('punkt')
-if not nltk.data.find('corpora/stopwords'):
-    nltk.download('stopwords')
+# if not nltk.data.find('tokenizers/punkt'):
+nltk.download('punkt')
+# if not nltk.data.find('corpora/stopwords'):
+nltk.download('stopwords')
 
 
 def load_files(directory):

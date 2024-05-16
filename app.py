@@ -60,7 +60,7 @@ def gpt_call():
 
     pdf_text = load_document(
         "corpus", top_doc).replace('\n', ' ')
-    prompt = f"Please provide an answer (step-by-step instructions if it is a How do/may/can I question) on {query} using the information from the provided PDF documents after this semicolon: \n\n{pdf_text}.\n\n"
+    prompt = f"Please provide an answer (step-by-step instructions if it is a `How do/may/can I` question) on {query} using the information from the provided PDF documents after this semicolon: \n\n{pdf_text}.\n\n"
 
     # Generate response using OpenAI Davinci engine
     response = openai.Completion.create(
@@ -71,7 +71,7 @@ def gpt_call():
         n=1,
         stop=None
     )
-
+    print(response)
     if response.choices[0].text:
         answer = response.choices[0].text.strip() + "..."
     else:
